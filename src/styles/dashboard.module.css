@@ -1,0 +1,20 @@
+.panel {
+    display: flex;
+}
+
+.menu {
+    width: 340px;
+    height: 100vh;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu>* {
+    margin: 30px auto 0 auto;
+    width: 280px;
+}
+
+.page {
+    width: calc(100vw - 340px);
+}
