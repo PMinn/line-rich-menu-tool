@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "cd src && node index.js"
   },
   "repository": {
     "type": "git",
@@ -20,9 +17,12 @@
   },
   "homepage": "https://github.com/PMinn/line-rich-menu-tool#readme",
   "dependencies": {
-    "@nextui-org/react": "^1.0.0-beta.13",
-    "next": "^13.4.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  }
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
+    "ejs-locals": "^1.0.2",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "node-fetch": "^3.3.1"
+  },
+  "type": "module"
 }
