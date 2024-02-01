@@ -7,6 +7,7 @@ export default function () {
   const { theme, setTheme, token, setToken } = useSystem();
 
   async function start() {
+    localStorage.setItem('token', document.getElementById('token').value);
     await setToken(document.getElementById('token').value);
     router.push('/dashboard');
   }

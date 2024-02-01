@@ -10,34 +10,48 @@ export default function () {
 
     useEffect(() => {
         if (token) {
-            fetch("/api/richmenu/list", {
-                method: "post",
-                body: JSON.stringify({ token })
-            })
-                .then(response => response.json())
-                .then(response => (response.status ? response.data : Promise.reject(response.message)))
-                .then(response => response.richmenus)
-                .then(async richMenus => await richMenus.map(async richMenu => {
-                    const response = await fetch("/api/richmenu/getImage", {
-                        method: "post",
-                        body: JSON.stringify({ id: richMenu.richMenuId, token })
-                    });
-                    const json = await response.json();
-                    if (json.status) richMenu.image = 'data:image/png;base64,' + json.data;
-                    return richMenu;
-                }))
-                .then(richMenus => Promise.all(richMenus))
-                .then(richMenus => {
-                    console.log(richMenus)
-                    setRichMenus(richMenus)
+            Promise.all([
+                fetch("/api/richmenu/list", {
+                    method: "post",
+                    body: JSON.stringify({ token })
                 })
-        } else {
-            console.log('token', token)
+                    .then(response => response.json())
+                    .then(response => (response.status ? response.data : Promise.reject(response.message)))
+                    .then(response => response.richmenus)
+                    .then(async richMenus => await richMenus.map(async richMenu => {
+                        const response = await fetch("/api/richmenu/getImage", {
+                            method: "post",
+                            body: JSON.stringify({ id: richMenu.richMenuId, token })
+                        });
+                        const json = await response.json();
+                        if (json.status) richMenu.image = 'data:image/png;base64,' + json.data;
+                        return richMenu;
+                    }))
+                    .then(richMenus => Promise.all(richMenus)),
+                fetch("/api/richmenu/getDefault", {
+                    method: "post",
+                    body: JSON.stringify({ token })
+                })
+                    .then(response => response.json())
+                    .then(response => (response.status ? response.data : Promise.reject(response.message)))
+                    .then(response => response.richMenuId)
+            ])
+                .then(response => {
+                    let menus = response[0];
+                    for (let i = 0; i < menus.length; i++) {
+                        if (menus[i].richMenuId === response[1]) {
+                            menus[i].isDefault = true;
+                            break;
+                        }
+                    }
+                    console.log(response);
+                    setRichMenus(menus);
+                })
         }
-    }, [token])
+    }, [token]);
 
     return (
-        <main className="gap-2 grid grid-cols-2 sm:grid-cols-4">
+        <main className="gap-2 grid grid-cols-2 md:grid-cols-4 p-5">
             {
                 richMenus.map((richMenu, index) => {
                     return (
@@ -48,12 +62,12 @@ export default function () {
                                     radius="lg"
                                     width="100%"
                                     alt=""
-                                    className="w-[200px] object-cover h-[200px]"
+                                    className="aspect-square object-cover h-[200px]"
                                     src={richMenu.image}
                                 />
                             </CardBody>
                             <CardFooter className="text-small justify-between">
-                                <b>{richMenu.name}</b>
+                                <b>{richMenu.isDefault ? "[預設] " : ""}{richMenu.name}</b>
                                 <p className="text-default-500">{richMenu.size.width} x {richMenu.size.height}</p>
                             </CardFooter>
                         </Card>
